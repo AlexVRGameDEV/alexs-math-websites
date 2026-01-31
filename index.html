@@ -1,0 +1,334 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GN-Math Link Picker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #000000;
+            color: #e0e0e0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .container {
+            background: #1a1a1a;
+            border: 1px solid #333333;
+            border-radius: 10px;
+            padding: 3rem;
+            max-width: 450px;
+            width: 90%;
+            position: relative;
+            z-index: 1;
+        }
+
+        .title {
+            font-size: 1.8rem;
+            font-weight: normal;
+            text-align: center;
+            margin-bottom: 2rem;
+            color: #ffffff;
+            letter-spacing: 0.05em;
+        }
+
+        .form-group {
+            margin-bottom: 2rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            color: #a0a0a0;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        select {
+            width: 100%;
+            padding: 1rem;
+            background: rgba(30, 30, 30, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            color: #e0e0e0;
+            font-size: 0.95rem;
+            font-family: inherit;
+            outline: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+            select:hover {
+                border-color: #444444;
+                background: #2a2a2a;
+            }
+
+            select:focus {
+                border-color: #555555;
+            }
+
+        option {
+            background: #1a1a1a;
+            color: #e0e0e0;
+            padding: 0.5rem;
+        }
+
+        .go-button {
+            width: 100%;
+            padding: 1rem 2rem;
+            background: #333333;
+            border: 1px solid #555555;
+            border-radius: 10px;
+            color: white;
+            font-size: 1rem;
+            font-weight: normal;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            position: relative;
+            overflow: hidden;
+        }
+
+
+
+            .go-button:hover {
+                background: #3a3a3a;
+            }
+
+
+
+            .go-button:active {
+                transform: translateY(0);
+            }
+
+        #embedContainer {
+            display: none;
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 9999;
+        }
+
+        #embed {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .copy-button {
+            padding: 1rem;
+            background: #333333;
+            border: 1px solid #555555;
+            border-radius: 10px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.2rem;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+            .copy-button:hover {
+                background: #444444;
+                border-color: #666666;
+            }
+
+        .toggle-button {
+            padding: 1rem;
+            background: #333333;
+            border: 1px solid #555555;
+            border-radius: 10px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.2rem;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+            .toggle-button:hover {
+                background: #444444;
+                border-color: #666666;
+            }
+
+        .new-tab-option {
+            color: #888888 !important;
+        }
+
+        .hidden-option {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">GN-Math Link Picker</h1>
+
+        <div class="form-group" style="display: flex; gap: 10px;">
+            <button class="copy-button" onclick="copySelectedLink()" title="Copy selected link to clipboard">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M8 5.00005C7.01165 5.00082 6.49359 5.01338 6.09202 5.21799C5.71569 5.40973 5.40973 5.71569 5.21799 6.09202C5 6.51984 5 7.07989 5 8.2V17.8C5 18.9201 5 19.4802 5.21799 19.908C5.40973 20.2843 5.71569 20.5903 6.09202 20.782C6.51984 21 7.07989 21 8.2 21H15.8C16.9201 21 17.4802 21 17.908 20.782C18.2843 20.5903 18.5903 20.2843 18.782 19.908C19 19.4802 19 18.9201 19 17.8V8.2C19 7.07989 19 6.51984 18.782 6.09202C18.5903 5.71569 18.2843 5.40973 17.908 5.21799C17.5064 5.01338 16.9884 5.00082 16 5.00005M8 5.00005V7H16V5.00005M8 5.00005V4.70711C8 4.25435 8.17986 3.82014 8.5 3.5C8.82014 3.17986 9.25435 3 9.70711 3H14.2929C14.7456 3 15.1799 3.17986 15.5 3.5C15.8201 3.82014 16 4.25435 16 4.70711V5.00005M12 11V17M9 14H15" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+            </button>
+            <select id="linkSelect" style="flex: 1;">
+                <option value="">Select a link...</option>
+                <option value="https://gn-math-t.github.io">GitHub</option>
+                <option value="https://kn0tzer.is-a.dev/math/host">is-a.dev (GitHub)</option>
+                <option value="https://prageru-server.s3.amazonaws.com/mathematics.html">Amazon</option>
+                <option value="https://mw.gn-math.dev.cdn.cloudflare.net">Cloudflare</option>
+                <option value="https://lesbianpainter.vercel.app">Vercel</option>
+                <option value="data:text/html;base64,PHNjcmlwdD5sYXVuY2goKTtmdW5jdGlvbiBsYXVuY2goKSB7IHRyeSB7IGZldGNoKCJodHRwczovL2Nkbi5qc2RlbGl2ci5uZXQvZ2gvZ24tbWF0aC9nbi1tYXRoLURPTlRETUNBQG1haW4vc2luZ2xlZmlsZS5odG1sP3Q9IitEYXRlLm5vdygpKSAudGhlbihyZXNwb25zZSA9PiByZXNwb25zZS50ZXh0KCkpIC50aGVuKGh0bWwgPT4geyBkb2N1bWVudC5kb2N1bWVudEVsZW1lbnQuaW5uZXJIVE1MID0gaHRtbC5yZXBsYWNlKCJuZXcgVVJMKHVybCwgbG9jYXRpb24ub3JpZ2luKS5ob3N0bmFtZSIsICciIicpOyBkb2N1bWVudC5kb2N1bWVudEVsZW1lbnQucXVlcnlTZWxlY3RvckFsbCgnc2NyaXB0JykuZm9yRWFjaChvbGRTY3JpcHQgPT4geyBjb25zdCBuZXdTY3JpcHQgPSBkb2N1bWVudC5jcmVhdGVFbGVtZW50KCdzY3JpcHQnKTsgaWYgKG9sZFNjcmlwdC5zcmMpIHsgbmV3U2NyaXB0LnNyYyA9IG9sZFNjcmlwdC5zcmM7IH0gZWxzZSB7IG5ld1NjcmlwdC50ZXh0Q29udGVudCA9IG9sZFNjcmlwdC50ZXh0Q29udGVudDsgfSBkb2N1bWVudC5ib2R5LmFwcGVuZENoaWxkKG5ld1NjcmlwdCk7IH0pOyB9KTsgfSBjYXRjaCAoZXJyb3IpIHsgY29uc29sZS5lcnJvcignZXJyb3I6JywgZXJyb3IpOyB9IH0gPC9zY3JpcHQ+">Data Link</option>
+
+                <option value="https://gn-math.netlify.app">Netlify</option>
+                <option value="https://gn-science.global.ssl.fastly.net">Fastly</option>
+
+                <option value="https://blahaj.dedyn.io/gn.html">Dedyn</option>
+                <option value="http://107.174.34.44/">IP Address</option>
+                <option value="https://theunitedstatessalad.skepticalsalad.com">Random 1</option>
+                <option value="https://garlandisd.kanjidamage.com">Random 2</option>
+                <option value="https://john.greenlifechurch.org">Random 3</option>
+                <option value="https://gn-math.offshorenomads.net">Random 4</option>
+                <option value="https://gn-math.offshorenomads.net">Random 5</option>
+                <option value="https://www.math-tutors.org/main.html">Random 6</option>
+                <option value="https://www.khanacademy.ink/main.html">Random 7</option>
+                <option value="https://ccs0715.789888.xyz">Random 8</option>
+                <option value="https://jaquavy-wavy.hstn.me" class="new-tab-option hidden-option">*Random 9</option>
+                <option value="https://deer-club-17246500.codehs.me" class="new-tab-option hidden-option">*CodeHS</option>
+                <option value="https://script.google.com/macros/s/AKfycbxQvbCW4DXTvZxQnB6f8h1IkWR_l2Yos4ww0196J9st06UOZyl8sAEGweDDW8IVtoaG/exec" class="new-tab-option hidden-option">*Google Scripts</option>
+                <option value="https://x0v-7e-o0-4r-3q-n3-c3-i3-6n-3n.w3spaces.com" class="new-tab-option hidden-option">*W3Spaces</option>
+                <option value="https://jaquavy-wavy.hstn.me" class="new-tab-option hidden-option">*Random 9</option>
+                <option value="https://sites.google.com/view/potatomath1/potato-math" class="new-tab-option hidden-option">*Google Sites</option>
+            </select>
+            <button class="toggle-button" id="toggleNewTab" onclick="toggleNewTabLinks()" title="Show sites that must be opened in a new tab, marked by *">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" id="eyeIcon">
+                    <path d="M2.99902 3L20.999 21M9.8433 9.91364C9.32066 10.4536 8.99902 11.1892 8.99902 12C8.99902 13.6569 10.3422 15 11.999 15C12.8215 15 13.5667 14.669 14.1086 14.133M6.49902 6.64715C4.59972 7.90034 3.15305 9.78394 2.45703 12C3.73128 16.0571 7.52159 19 11.9992 19C13.9881 19 15.8414 18.4194 17.3988 17.4184M10.999 5.04939C11.328 5.01673 11.6617 5 11.9992 5C16.4769 5 20.2672 7.94291 21.5414 12C21.2607 12.894 20.8577 13.7338 20.3522 14.5" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+            </button>
+        </div>
+
+        <button class="go-button" onclick="goToLink()">Go</button>
+        <div style="text-align: center; margin-top: 1rem;">
+            <a href="https://github.com/Kn0tzer" target="_blank" style="color: #e0e0e0; text-decoration: underline; font-size: 1rem; cursor: pointer;">Made by Kn0tzer</a>
+            <span style="color: #e0e0e0; margin: 0 0.5rem;">|</span>
+            <a href="https://raw.githubusercontent.com/Kn0tzer/kn0tzer.github.io/refs/heads/main/math/index.html" onclick="downloadFile(event)" style="color: #e0e0e0; text-decoration: underline; font-size: 1rem; cursor: pointer;">Download</a>
+        </div>
+    </div>
+
+    <div id="embedContainer">
+        <iframe id="embed" src=""></iframe>
+    </div>
+
+    <script>
+        let newTabVisible = false;
+
+        function toggleNewTabLinks() {
+            newTabVisible = !newTabVisible;
+            const newTabOptions = document.querySelectorAll('.new-tab-option');
+            const eyeIcon = document.getElementById('eyeIcon');
+            const toggleButton = document.getElementById('toggleNewTab');
+
+            newTabOptions.forEach(option => {
+                if (newTabVisible) {
+                    option.classList.remove('hidden-option');
+                } else {
+                    option.classList.add('hidden-option');
+                }
+            });
+
+            if (newTabVisible) {
+                eyeIcon.innerHTML = `
+                    <path d="M15.0007 12C15.0007 13.6569 13.6576 15 12.0007 15C10.3439 15 9.00073 13.6569 9.00073 12C9.00073 10.3431 10.3439 9 12.0007 9C13.6576 9 15.0007 10.3431 15.0007 12Z" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M12.0012 5C7.52354 5 3.73326 7.94288 2.45898 12C3.73324 16.0571 7.52354 19 12.0012 19C16.4788 19 20.2691 16.0571 21.5434 12C20.2691 7.94291 16.4788 5 12.0012 5Z" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                `;
+                toggleButton.title = "Hide sites that must be opened in a new tab, marked by *";
+            } else {
+                eyeIcon.innerHTML = `
+                    <path d="M2.99902 3L20.999 21M9.8433 9.91364C9.32066 10.4536 8.99902 11.1892 8.99902 12C8.99902 13.6569 10.3422 15 11.999 15C12.8215 15 13.5667 14.669 14.1086 14.133M6.49902 6.64715C4.59972 7.90034 3.15305 9.78394 2.45703 12C3.73128 16.0571 7.52159 19 11.9992 19C13.9881 19 15.8414 18.4194 17.3988 17.4184M10.999 5.04939C11.328 5.01673 11.6617 5 11.9992 5C16.4769 5 20.2672 7.94291 21.5414 12C21.2607 12.894 20.8577 13.7338 20.3522 14.5" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                `;
+                toggleButton.title = "Show sites that must be opened in a new tab, marked by *";
+            }
+        }
+
+        function goToLink() {
+            const select = document.getElementById('linkSelect');
+            const selectedValue = select.value;
+            const selectedText = select.options[select.selectedIndex].text;
+
+            if (selectedValue) {
+                // Sites that should open in new tab (marked with *)
+                const newTabSites = ['*CodeHS', '*Google Scripts', '*Google Sites', '*W3Spaces', '*Random 8', '*Random 9'];
+
+                if (newTabSites.some(site => selectedText.startsWith(site))) {
+                    window.open(selectedValue, '_blank');
+                } else {
+                    const embedContainer = document.querySelector('#embedContainer');
+                    const iframe = document.getElementById('embed');
+
+                    embedContainer.style.display = 'block';
+                    iframe.src = selectedValue;
+                }
+            } else {
+                select.focus();
+            }
+        }
+
+        function downloadFile(event) {
+            event.preventDefault();
+            const url = 'https://raw.githubusercontent.com/Kn0tzer/kn0tzer.github.io/refs/heads/main/math/index.html';
+            window.open(url, '_blank');
+        }
+
+        function copySelectedLink() {
+            const select = document.getElementById('linkSelect');
+            const selectedValue = select.value;
+
+            if (selectedValue) {
+                navigator.clipboard.writeText(selectedValue).then(() => {
+                    const button = document.querySelector('.copy-button');
+                    const originalContent = button.innerHTML;
+                    button.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 11L12 14L20 6" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+                    setTimeout(() => {
+                        button.innerHTML = originalContent;
+                    }, 1000);
+                });
+            }
+        }
+
+        const embedContainer = document.querySelector('#embedContainer');
+
+        function handleKeyPress(event) {
+            if (event.key === 'Escape') {
+                embedContainer.style.display = 'block';
+            }
+        }
+
+        document.addEventListener('keydown', handleKeyPress);
+
+        document.getElementById('linkSelect').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                goToLink();
+            }
+        });
+    </script>
+</body>
+</html>
